@@ -31,4 +31,32 @@ public class RefreshToken {
 	@OneToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private Customer customer;
+
+	public UUID getToken() {
+		return token;
+	}
+
+	public void setToken(UUID token) {
+		this.token = token;
+	}
+
+	public long getExpiresIn() {
+		return expiresIn;
+	}
+
+	public void setExpiresIn(long expiresIn) {
+		this.expiresIn = expiresIn;
+	}
+
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
+
+	public UUID getId() {
+		return id;
+	}
 }
