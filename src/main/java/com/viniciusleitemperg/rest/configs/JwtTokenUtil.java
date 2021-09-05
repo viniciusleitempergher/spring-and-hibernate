@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.viniciusleitemperg.rest.models.Customer;
+import com.viniciusleitemperg.rest.models.RefreshToken;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -20,8 +21,10 @@ public class JwtTokenUtil implements Serializable {
 
 	private static final long serialVersionUID = 5282239508767377003L;
 
-	public static final long JWT_REFESH_TOKEN_VALIDITY = 24 * 60 * 60;
-	
+	@Value("${jwt.refreshtoken.validity}")
+	public static long JWT_REFESH_TOKEN_VALIDITY;
+	@Value("${jwt.token.validity}")
+	public static long JWT_TOKEN_VALIDITY;
 
 	@Value("${jwt.refreshtoken.secret}")
 	String REFRESH_TOKEN_SECRET;
@@ -82,14 +85,14 @@ public class JwtTokenUtil implements Serializable {
 	 * 
 	 * @param customer - the customer object
 	 */
-	public String generateAccessToken(String refreshTokenId) {
-		return doGenerateToken(refreshTokenId, JWT_REFESH_TOKEN_VALIDITY);
+	public String generateAccessToken(RefreshToken refreshToken) {
+		return doGenerateToken(refreshToken.getId().toString(), JWT_TOKEN_VALIDITY);
 	}
 
 	/**
 	 * Creates the token and defines its time of expiration
 	 * 
-	 * @param subject - the id of the customer/refreshToken
+	 * @param subject  - the id of the customer/refreshToken
 	 * @param validity - the time in seconds to expire
 	 */
 	private String doGenerateToken(String subject, Long validity) {
