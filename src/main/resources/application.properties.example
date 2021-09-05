@@ -1,7 +1,7 @@
 #datasource configurations
-spring.datasource.url=jdbc:postgresql://localhost:5432/spring-and-hibernate
-spring.datasource.username=postgres
-spring.datasource.password=admin
+spring.datasource.url=jdbc:postgresql://localhost:5432/#DBname
+spring.datasource.username= # Database username
+spring.datasource.password= # Database pass
 
 # DDL generation
 spring.jpa.generate-ddl=true
@@ -14,6 +14,6 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQL81Dialec
 
 
 # JWT Secrets
-jwt.token.secret=7cd614f1-e043-40f0-914e-2f2cfc22dd56
-jwt.refreshtoken.secret=b0723659-fc7d-4bbe-8167-a7a78b551394
+jwt.token.secret= # Some random UUID
+jwt.refreshtoken.secret= # Another some random UUID
 
