@@ -3,6 +3,7 @@ package com.viniciusleitemperg.rest.services;
 import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,13 @@ public class CustomerService {
 	private CustomerRepository customerRepository;
 
 	public Customer createCustomer(Customer customerData) {
+
+		boolean emailExists = customerRepository.existsByEmail(customerData.getEmail());
+
+		if (emailExists) {
+			throw new EntityExistsException("Email already exists!");
+		}
+
 		Customer customer = new Customer();
 
 		customer.setEmail(customerData.getEmail());
@@ -25,14 +33,14 @@ public class CustomerService {
 		customer.setLastName(customerData.getLastName());
 
 		Customer customerToReturn = customerRepository.save(customer);
-		System.out.println(customerToReturn);
-		System.out.println(customerToReturn.getId().toString());
 
 		return customerToReturn;
 	}
 
 	public void removeCustomer(UUID id) {
-		customerRepository.deleteById(id);
+		Customer customer = customerRepository.findById(id)
+				.orElseThrow(() -> new EntityNotFoundException("Customer not found"));
+		customerRepository.delete(customer);
 	}
 
 	public List<Customer> getCustomers() {

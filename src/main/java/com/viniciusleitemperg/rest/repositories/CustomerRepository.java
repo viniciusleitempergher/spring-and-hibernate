@@ -9,4 +9,5 @@ import com.viniciusleitemperg.rest.models.Customer;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, UUID> {
+	Boolean existsByEmail(String email);
 }
