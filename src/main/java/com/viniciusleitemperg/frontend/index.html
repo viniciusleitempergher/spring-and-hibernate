@@ -22,7 +22,7 @@
             const tokens = await fetch('http://localhost:8080/auth/login', {
                 method: 'POST',
                 headers,
-                body: JSON.stringify({ googleId })
+                body: JSON.stringify(googleId)
             });
 
             const { token, refreshToken } = await tokens.json();
