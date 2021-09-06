@@ -37,6 +37,10 @@ public class CustomerService {
 		return customerToReturn;
 	}
 
+	public boolean customerExists(String email) {
+		return customerRepository.existsByEmail(email);
+	}
+
 	public void removeCustomer(UUID id) {
 		Customer customer = customerRepository.findById(id)
 				.orElseThrow(() -> new EntityNotFoundException("Customer not found"));

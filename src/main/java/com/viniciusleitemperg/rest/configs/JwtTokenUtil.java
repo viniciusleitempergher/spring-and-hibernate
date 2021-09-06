@@ -21,13 +21,21 @@ public class JwtTokenUtil implements Serializable {
 
 	private static final long serialVersionUID = 5282239508767377003L;
 
-	@Value("${jwt.refreshtoken.validity}")
-	public static long JWT_REFESH_TOKEN_VALIDITY;
-	@Value("${jwt.token.validity}")
-	public static long JWT_TOKEN_VALIDITY;
+	public Long JWT_REFRESH_TOKEN_VALIDITY;
+	public Long JWT_TOKEN_VALIDITY;
+
+	@Value("${jwt.token.seconds}")
+	private void setTokenValidity(String seconds) {
+		this.JWT_TOKEN_VALIDITY = Long.parseLong(seconds);
+	}
+
+	@Value("${jwt.refreshtoken.hours}")
+	private void setRefreshTokenValidity(String hours) {
+		this.JWT_REFRESH_TOKEN_VALIDITY = Long.parseLong(hours) * 60 * 60;
+	}
 
 	@Value("${jwt.refreshtoken.secret}")
-	String REFRESH_TOKEN_SECRET;
+	private String REFRESH_TOKEN_SECRET;
 
 	/**
 	 * Returns the id of the customer token
@@ -77,7 +85,7 @@ public class JwtTokenUtil implements Serializable {
 	 * @param customer - the customer object
 	 */
 	public String generateRefeshToken(Customer customer) {
-		return doGenerateToken(customer.getId().toString(), JWT_REFESH_TOKEN_VALIDITY);
+		return doGenerateToken(customer.getId().toString(), JWT_REFRESH_TOKEN_VALIDITY);
 	}
 
 	/**

@@ -8,6 +8,7 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.viniciusleitemperg.rest.models.Customer;
 import com.viniciusleitemperg.rest.services.CustomerService;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/customers")
 public class CustomerController {

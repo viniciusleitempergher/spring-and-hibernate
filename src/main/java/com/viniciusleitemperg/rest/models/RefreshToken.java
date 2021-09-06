@@ -13,30 +13,28 @@ import org.hibernate.annotations.Type;
 
 @Entity(name = "refresh_token")
 public class RefreshToken {
-	
+
 	@Id
 	@GeneratedValue(generator = "uuid4")
 	@Type(type = "org.hibernate.type.PostgresUUIDType")
 	@Column(name = "id", updatable = false, unique = true, nullable = false, columnDefinition = "uuid")
 	private UUID id;
-	
-	@GeneratedValue(generator = "uuid4")
-	@Type(type = "org.hibernate.type.PostgresUUIDType")
+
 	@Column(name = "token", nullable = false, unique = true)
-	private UUID token;
-	
+	private String token;
+
 	@Column(name = "expires_in", nullable = false)
 	private long expiresIn;
-	
-	@OneToOne
-    @JoinColumn(name = "customer_id", referencedColumnName = "id")
-    private Customer customer;
 
-	public UUID getToken() {
+	@OneToOne
+	@JoinColumn(name = "customer_id", referencedColumnName = "id")
+	private Customer customer;
+
+	public String getToken() {
 		return token;
 	}
 
-	public void setToken(UUID token) {
+	public void setToken(String token) {
 		this.token = token;
 	}
 
