@@ -18,3 +18,6 @@ jwt.token.secret= # Some random UUID
 jwt.refreshtoken.secret= # Another some random UUID
 jwt.token.validity=20
 jwt.refreshtoken.validity=24*60*60
+
+# Google OAuth2 client
+google.client.id= # Your OAuth2 client id from google
