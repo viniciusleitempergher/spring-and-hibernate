@@ -23,10 +23,12 @@
                 mode: 'no-cors',
                 method: 'POST',
                 headers,
-                body: JSON.stringify(googleId)
+                body: JSON.stringify({ googleId })
             });
 
+            console.log(tokens);
             const response = await tokens.json();
+            console.log(response);
             const [[, token], [, refreshToken]] = response;
 
             console.log(token);

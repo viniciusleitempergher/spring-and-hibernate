@@ -16,8 +16,8 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQL81Dialec
 # JWT Secrets and validity(in seconds)
 jwt.token.secret= # Some random UUID
 jwt.refreshtoken.secret= # Another some random UUID
-jwt.token.validity=20
-jwt.refreshtoken.validity=24*60*60
+jwt.token.seconds=20
+jwt.refreshtoken.hours=24
 
 # Google OAuth2 client
-google.client.id= # Your OAuth2 client id from google
+google.client.id=

@@ -3,6 +3,9 @@ package com.viniciusleitemperg.rest.configs;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -23,7 +26,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		this.jwtFilter = jwtFilter;
 	}
 
-	// Details omitted for brevity
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+
+	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -41,12 +47,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		// Set permissions on endpoints
 		http.authorizeRequests()
 				// public endpoints
-				.antMatchers("/auth/**").permitAll()
+				.antMatchers("/auth/**").permitAll().antMatchers(HttpMethod.POST, "/auth/login").permitAll()
 				// private endpoints
 				.antMatchers("/customers").hasRole("USER").anyRequest().authenticated();
 
 		// Add JWT token filter
-		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+		// http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 
 	// Used by spring security if CORS is enabled.
@@ -54,12 +60,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	public CorsFilter corsFilter() {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowCredentials(true);
+		config.setAllowCredentials(false);
 		config.addAllowedOrigin("*");
 		config.addAllowedHeader("*");
 		config.addAllowedMethod("*");
+		config.addAllowedOriginPattern("*");
 		source.registerCorsConfiguration("/**", config);
 		return new CorsFilter(source);
 	}
 
+	@Override
+	@Bean
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
 }

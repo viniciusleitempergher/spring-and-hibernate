@@ -1,6 +1,8 @@
 package com.viniciusleitemperg.rest.controllers;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,17 +15,23 @@ import com.viniciusleitemperg.rest.services.AuthService;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/auth")
+@RequestMapping(value = "/auth")
 public class AuthController {
 
 	@Resource(name = "authService")
 	private AuthService authService;
 
-	@PostMapping("/login")
+	class RequestBodyData {
+		String googleId;
+	}
+
+	@PostMapping(value = "/login")
 	@ResponseBody
-	public String[][] login(@RequestBody Object requestBody) throws Exception {
+	public String[][] login(HttpServletRequest request, HttpServletResponse response,
+			@RequestBody RequestBodyData requestBody) throws Exception {
+
+		String googleId = requestBody.googleId;
 		try {
-			String googleId = requestBody.toString();
 			System.out.println(googleId);
 			String[][] tokens = authService.login(googleId);
 

@@ -11,6 +11,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -26,9 +29,17 @@ public class JwtFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException {
+
+		String path = request.getRequestURI();
+		if ("/auth/login".equals(path)) {
+			chain.doFilter(request, response);
+			return;
+		}
+
 		// Get authorization header and validate
 		final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-		if (header.length() <= 0 || !header.startsWith("Bearer ")) {
+
+		if (header == null || !header.startsWith("Bearer ")) {
 			chain.doFilter(request, response);
 			return;
 		}
@@ -45,15 +56,12 @@ public class JwtFilter extends OncePerRequestFilter {
 			chain.doFilter(request, response);
 		}
 
-		// UsernamePasswordAuthenticationToken authentication = new
-		// UsernamePasswordAuthenticationToken(userDetails, null,
-		// userDetails == null ? List.of() : userDetails.getAuthorities());
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(null, null, null);
 
-		// authentication.setDetails(new
-		// WebAuthenticationDetailsSource().buildDetails(request));
+		authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-		// SecurityContextHolder.getContext().setAuthentication(authentication);
-		// chain.doFilter(request, response);
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		chain.doFilter(request, response);
 	}
 
 }
