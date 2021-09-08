@@ -42,8 +42,7 @@ public class JwtFilter extends OncePerRequestFilter {
 		final String token = header.split(" ")[1].trim();
 
 		try {
-			Customer customer = jwtTokenUtil.getCustomerFromToken(token);
-			if (!jwtTokenUtil.validateAccessTokenByCustomer(token, customer)) {
+			if (!jwtTokenUtil.validateAccessToken(token)) {
 				throw new AccessDeniedException("Invalid Token");
 			}
 		} catch (EntityNotFoundException | AccessDeniedException e) {

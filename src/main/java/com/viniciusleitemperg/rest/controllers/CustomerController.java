@@ -6,7 +6,9 @@ import java.util.UUID;
 import javax.annotation.Resource;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
+import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.viniciusleitemperg.rest.configs.JwtTokenUtil;
 import com.viniciusleitemperg.rest.models.Customer;
 import com.viniciusleitemperg.rest.services.CustomerService;
 
@@ -29,6 +32,9 @@ public class CustomerController {
 
 	@Resource(name = "customerService")
 	private CustomerService customerService;
+
+	@Autowired
+	private JwtTokenUtil jwt;
 
 	@GetMapping
 	public List<Customer> getCustomers() {
@@ -61,5 +67,14 @@ public class CustomerController {
 		} catch (EntityNotFoundException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
 		}
+	}
+
+	@PostMapping("/customerinfo")
+	public Customer customerInfo(HttpServletRequest request) {
+
+		String token = request.getHeader("Authorization").split(" ")[1];
+		System.out.println(token);
+		Customer customer = jwt.getCustomerFromAccessToken(token);
+		return customer;
 	}
 }

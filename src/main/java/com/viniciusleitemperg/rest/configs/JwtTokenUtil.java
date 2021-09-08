@@ -147,17 +147,17 @@ public class JwtTokenUtil implements Serializable {
 	}
 
 	/**
-	 * @throws EntityNotFoundException - if refresh token from token doesn't exists in DB
+	 * @throws EntityNotFoundException - if refresh token from param token doesn't
+	 *                                 exists in DB
 	 * 
-	 * @param token    - the access token
-	 * @param customer - the customer's object
+	 * @param token - the access token
 	 * @return true if valid, false if not
 	 */
-	public Boolean validateAccessTokenByCustomer(String token, Customer customer) {
+	public Boolean validateAccessToken(String token) {
 		final String id = getIdFromToken(token);
 		RefreshToken refreshToken = refreshTokenRepository.findById(UUID.fromString(id))
 				.orElseThrow(() -> new EntityNotFoundException());
-		return (id.equals(refreshToken.getId().toString()) && !isTokenExpired(token));
+		return validateAccessToken(token, refreshToken);
 	}
 
 	/**
@@ -165,12 +165,12 @@ public class JwtTokenUtil implements Serializable {
 	 * @param token - the access token
 	 * @return the customer from token
 	 */
-	public Customer getCustomerFromToken(String token) {
-		String id = getIdFromToken(token);
+	public Customer getCustomerFromAccessToken(String token) {
+		String refreshTokenId = getIdFromToken(token);
 
-		Customer customer = customerRepository.findById(UUID.fromString(id))
+		RefreshToken refreshToken = refreshTokenRepository.findById(UUID.fromString(refreshTokenId))
 				.orElseThrow(() -> new EntityNotFoundException());
 
-		return customer;
+		return refreshToken.getCustomer();
 	}
 }
