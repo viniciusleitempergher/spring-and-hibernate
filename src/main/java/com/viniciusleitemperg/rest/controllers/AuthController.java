@@ -1,14 +1,14 @@
 package com.viniciusleitemperg.rest.controllers;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
+import org.apache.tomcat.util.json.JSONParser;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.viniciusleitemperg.rest.services.AuthService;
@@ -21,21 +21,21 @@ public class AuthController {
 	@Resource(name = "authService")
 	private AuthService authService;
 
-	class RequestBodyData {
-		String googleId;
-	}
-
 	@PostMapping(value = "/login")
-	@ResponseBody
-	public String[][] login(HttpServletRequest request, HttpServletResponse response,
-			@RequestBody RequestBodyData requestBody) throws Exception {
+	public ResponseEntity<?> login(@RequestBody String jsonRequest) throws Exception {
 
-		String googleId = requestBody.googleId;
+		JSONParser json = new JSONParser(jsonRequest);
+
+		Object obj = json.parse();
+
+		String googleId = obj.toString().split("=")[1];
+		googleId = googleId.substring(0, googleId.length() - 1);
+
 		try {
 			System.out.println(googleId);
 			String[][] tokens = authService.login(googleId);
 
-			return tokens;
+			return new ResponseEntity(tokens, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
