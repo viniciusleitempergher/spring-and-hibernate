@@ -3,7 +3,6 @@ package com.viniciusleitemperg.rest.services;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
-import java.util.UUID;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityExistsException;
@@ -88,13 +87,14 @@ public class AuthService {
 	}
 
 	private String[][] handleExistingCustomer(Customer customerData) {
-		Customer customer = customerRepository.findByEmail(customerData.getEmail());
 
+		Customer customer = customerRepository.findByEmail(customerData.getEmail());
+		System.out.println("Customer: " + customer.getEmail());
 		RefreshToken dataRefreshToken = refreshTokenRepository.findByCustomer(customer);
 
-		String refreshToken = dataRefreshToken.getToken().toString();
+		String refreshToken = dataRefreshToken.getToken();
 
-		if (jwt.validateToken(refreshToken, customer)) {
+		if (jwt.validateRefreshToken(refreshToken, customer)) {
 			String accessToken = createAccessToken(dataRefreshToken);
 			return new String[][] { { "token", accessToken + "" }, { "refreshToken", refreshToken + "" } };
 		} else {
@@ -113,7 +113,7 @@ public class AuthService {
 	}
 
 	private String[] createRefreshToken(Customer customer) {
-		String refreshToken = jwt.generateRefeshToken(customer);
+		String refreshToken = jwt.generateRefreshToken(customer);
 
 		RefreshToken refreshTokenEntity = new RefreshToken();
 
@@ -129,7 +129,7 @@ public class AuthService {
 
 		String accessToken = createAccessToken(refreshTokenEntity);
 
-		return new String[] { refreshToken, accessToken };
+		return new String[] { accessToken, refreshToken };
 	}
 
 	private String createAccessToken(RefreshToken refreshToken) {

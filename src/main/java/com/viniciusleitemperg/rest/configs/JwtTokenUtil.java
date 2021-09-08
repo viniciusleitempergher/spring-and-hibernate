@@ -4,13 +4,19 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
+import javax.persistence.EntityNotFoundException;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.viniciusleitemperg.rest.models.Customer;
 import com.viniciusleitemperg.rest.models.RefreshToken;
+import com.viniciusleitemperg.rest.repositories.CustomerRepository;
+import com.viniciusleitemperg.rest.repositories.RefreshTokenRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -18,6 +24,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
 public class JwtTokenUtil implements Serializable {
+
+	@Autowired
+	private RefreshTokenRepository refreshTokenRepository;
 
 	private static final long serialVersionUID = 5282239508767377003L;
 
@@ -36,6 +45,9 @@ public class JwtTokenUtil implements Serializable {
 
 	@Value("${jwt.refreshtoken.secret}")
 	private String REFRESH_TOKEN_SECRET;
+
+	@Autowired
+	private CustomerRepository customerRepository;
 
 	/**
 	 * Returns the id of the customer token
@@ -84,7 +96,7 @@ public class JwtTokenUtil implements Serializable {
 	 * 
 	 * @param customer - the customer object
 	 */
-	public String generateRefeshToken(Customer customer) {
+	public String generateRefreshToken(Customer customer) {
 		return doGenerateToken(customer.getId().toString(), JWT_REFRESH_TOKEN_VALIDITY);
 	}
 
@@ -112,13 +124,53 @@ public class JwtTokenUtil implements Serializable {
 	}
 
 	/**
-	 * Checks if the token is valid for this customer
+	 * Checks if the refresh token is valid
 	 * 
-	 * @param token    - the login token
+	 * @param token    - the refresh token
 	 * @param customer - the customer's object
 	 */
-	public Boolean validateToken(String token, Customer customer) {
-		final String username = getIdFromToken(token);
-		return (username.equals(customer.getId()) && !isTokenExpired(token));
+	public Boolean validateRefreshToken(String token, Customer customer) {
+		final String id = getIdFromToken(token);
+
+		return (id.equals(customer.getId().toString()) && !isTokenExpired(token));
+	}
+
+	/**
+	 * Checks if the token is valid for this customer
+	 * 
+	 * @param token        - the access token
+	 * @param refreshToken - the refresh token's object
+	 */
+	public Boolean validateAccessToken(String token, RefreshToken refreshToken) {
+		final String id = getIdFromToken(token);
+		return (id.equals(refreshToken.getId().toString()) && !isTokenExpired(token));
+	}
+
+	/**
+	 * @throws EntityNotFoundException - if refresh token from token doesn't exists in DB
+	 * 
+	 * @param token    - the access token
+	 * @param customer - the customer's object
+	 * @return true if valid, false if not
+	 */
+	public Boolean validateAccessTokenByCustomer(String token, Customer customer) {
+		final String id = getIdFromToken(token);
+		RefreshToken refreshToken = refreshTokenRepository.findById(UUID.fromString(id))
+				.orElseThrow(() -> new EntityNotFoundException());
+		return (id.equals(refreshToken.getId().toString()) && !isTokenExpired(token));
+	}
+
+	/**
+	 * @throws EntityNotFoundException - case customer from token doesn't exists
+	 * @param token - the access token
+	 * @return the customer from token
+	 */
+	public Customer getCustomerFromToken(String token) {
+		String id = getIdFromToken(token);
+
+		Customer customer = customerRepository.findById(UUID.fromString(id))
+				.orElseThrow(() -> new EntityNotFoundException());
+
+		return customer;
 	}
 }
