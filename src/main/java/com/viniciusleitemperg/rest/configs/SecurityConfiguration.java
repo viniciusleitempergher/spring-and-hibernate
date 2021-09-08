@@ -3,15 +3,10 @@ package com.viniciusleitemperg.rest.configs;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.access.intercept.AuthorizationFilter;
-import org.springframework.security.web.authentication.AuthenticationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -46,12 +41,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		// Set permissions on endpoints
 		http.authorizeRequests()
 				// public endpoints
-				.antMatchers("/api/public/**").permitAll().antMatchers(HttpMethod.GET, "/").permitAll()
-				.antMatchers(HttpMethod.POST, "/api/author/search").permitAll()
-				.antMatchers(HttpMethod.GET, "/api/book/**").permitAll()
-				.antMatchers(HttpMethod.POST, "/api/book/search").permitAll()
+				.antMatchers("/auth/**").permitAll()
 				// private endpoints
-				.anyRequest().authenticated();
+				.antMatchers("/customers").hasRole("USER").anyRequest().authenticated();
 
 		// Add JWT token filter
 		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
