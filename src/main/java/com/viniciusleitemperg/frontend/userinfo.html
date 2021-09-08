@@ -21,7 +21,6 @@
         }
 
         const res = await fetch("http://localhost:8080/customers/customerinfo", {
-          mode: 'no-cors',
           headers: {
             "Authorization": `Bearer ${token}`
           },

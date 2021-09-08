@@ -22,7 +22,6 @@
             console.log(JSON.stringify({ googleId }));
 
             const tokens = await fetch('http://localhost:8080/auth/login', {
-                mode: 'no-cors',
                 method: 'POST',
                 headers,
                 body: JSON.stringify({ googleId })
