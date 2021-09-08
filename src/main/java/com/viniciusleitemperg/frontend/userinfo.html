@@ -20,7 +20,7 @@
           throw new Error("No tokens :C");
         }
 
-        const res = await fetch("http://localhost:8080/customerinfo/", {
+        const res = await fetch("http://localhost:8080/customers/customerinfo", {
           headers: {
             "Authorization": `Bearer ${token}`
           },
