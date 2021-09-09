@@ -9,6 +9,7 @@ import javax.persistence.EntityExistsException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -135,5 +136,17 @@ public class AuthService {
 	private String createAccessToken(RefreshToken refreshToken) {
 		String accessToken = jwt.generateAccessToken(refreshToken);
 		return accessToken;
+	}
+
+	public String refreshAccessToken(String refreshToken) {
+		Customer customer = jwt.getCustomerFromRefreshToken(refreshToken);
+
+		if (jwt.validateRefreshToken(refreshToken, customer)) {
+			RefreshToken refreshTokenData = refreshTokenRepository.findByCustomer(customer);
+
+			return jwt.generateAccessToken(refreshTokenData);
+		} else {
+			throw new AccessDeniedException("Invalid Token");
+		}
 	}
 }

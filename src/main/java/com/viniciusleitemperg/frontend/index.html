@@ -19,17 +19,14 @@
             let headers = new Headers();
             headers.append("Content-Type", "application/json");
 
-            console.log(JSON.stringify({ googleId }));
-
             const tokens = await fetch('http://localhost:8080/auth/login', {
                 method: 'POST',
                 headers,
-                body: JSON.stringify({ googleId })
+                body: JSON.stringify({ token: googleId })
             });
 
-            console.log(tokens);
             const response = await tokens.json();
-            console.log(response);
+
             const [[, token], [, refreshToken]] = response;
 
             console.log(token);

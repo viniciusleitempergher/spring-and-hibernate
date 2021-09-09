@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.viniciusleitemperg.rest.configs.JwtTokenUtil;
-import com.viniciusleitemperg.rest.models.Customer;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {

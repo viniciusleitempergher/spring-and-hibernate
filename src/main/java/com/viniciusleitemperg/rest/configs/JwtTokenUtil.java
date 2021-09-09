@@ -52,7 +52,7 @@ public class JwtTokenUtil implements Serializable {
 	/**
 	 * Returns the id of the customer token
 	 * 
-	 * @param token - the customer login token
+	 * @param token - the customer access/refresh token
 	 */
 	public String getIdFromToken(String token) {
 		return getClaimFromToken(token, Claims::getSubject);
@@ -161,7 +161,8 @@ public class JwtTokenUtil implements Serializable {
 	}
 
 	/**
-	 * @throws EntityNotFoundException - case customer from token doesn't exists
+	 * @throws EntityNotFoundException - case refresh token from access token
+	 *                                 doesn't exists
 	 * @param token - the access token
 	 * @return the customer from token
 	 */
@@ -172,5 +173,20 @@ public class JwtTokenUtil implements Serializable {
 				.orElseThrow(() -> new EntityNotFoundException());
 
 		return refreshToken.getCustomer();
+	}
+
+	/**
+	 * @throws EntityNotFoundException - case customer from refresh token doesn't
+	 *                                 exists
+	 * @param token - the refresh token
+	 * @return customer - the customer's object from db
+	 */
+	public Customer getCustomerFromRefreshToken(String token) {
+		String customerId = getIdFromToken(token);
+
+		Customer customer = customerRepository.findById(UUID.fromString(customerId))
+				.orElseThrow(() -> new EntityNotFoundException());
+
+		return customer;
 	}
 }

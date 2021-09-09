@@ -13,29 +13,58 @@
   <script>
     window.addEventListener("load", async () => {
       try {
-        let token = JSON.parse(localStorage.getItem("token"));
-        let refreshToken = JSON.parse(localStorage.getItem("refreshToken"));
+        async function getUserInfo() {
+          let token = JSON.parse(localStorage.getItem("token"));
+          let refreshToken = JSON.parse(localStorage.getItem("refreshToken"));
 
-        if (!token || !refreshToken) {
-          throw new Error("No tokens :C");
+          if (!token || !refreshToken) {
+            throw new Error("No tokens :C");
+          }
+
+          const res = await fetch("http://localhost:8080/customers/customerinfo", {
+            headers: {
+              "Authorization": `Bearer ${token}`
+            },
+            method: "POST"
+          });
+          return res;
         }
 
-        const res = await fetch("http://localhost:8080/customers/customerinfo", {
-          headers: {
-            "Authorization": `Bearer ${token}`
-          },
-          method: "POST"
-        });
+        let res = await getUserInfo();
 
         if (res.ok) {
           const user = await res.json();
-
           console.log(user);
         } else {
-          console.log(res);
+          refreshAccessToken();
+          res = await getUserInfo();
+
+          const user = await res.json();
+          console.log(user);
         }
       } catch (error) {
         console.log(error);
+      }
+
+      async function refreshAccessToken() {
+        let refreshToken = JSON.parse(localStorage.getItem("refreshToken"));
+        let headers = new Headers();
+        headers.append("Content-Type", "application/json");
+        const newToken = await fetch('http://localhost:8080/auth/refresh', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ token: refreshToken })
+        });
+
+        const response = await newToken.json();
+
+        const token = response.token
+
+        if (token) {
+          localStorage.setItem("token", JSON.stringify(token));
+        }
+
+        return token;
       }
     })
   </script>
